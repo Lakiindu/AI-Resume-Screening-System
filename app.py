@@ -1,13 +1,21 @@
 from flask import Flask
+from config import Config
+from database.db_connection import get_db_connection
 
-# Create the Flask application
 app = Flask(__name__)
+app.config.from_object(Config)
 
-# Home page route
+
 @app.route("/")
 def home():
-    return "AI Resume Screening System is running successfully!"
+    connection = get_db_connection()
 
-# Run the application
+    if connection:
+        connection.close()
+        return "AI Resume Screening System connected to MySQL successfully!"
+
+    return "Database connection failed. Please check your MySQL settings."
+
+
 if __name__ == "__main__":
     app.run(debug=True)
