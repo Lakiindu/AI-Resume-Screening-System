@@ -80,3 +80,8 @@ body {
 .content-area {
     padding: 30px;
 }
+
+/* Login Card */
+.login-card {
+    max-width: 420px;
+}
