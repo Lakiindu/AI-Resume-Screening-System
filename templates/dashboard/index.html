@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Dashboard | AI Resume Screening System" %}
+{% set page_title = "Dashboard" %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted mb-1">Total Jobs</p>
+                <h3>0</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted mb-1">Total Resumes</p>
+                <h3>0</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted mb-1">Average Match Score</p>
+                <h3>0%</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -13,4 +13,4 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role ENUM('admin') DEFAULT 'admin',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
