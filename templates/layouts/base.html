@@ -26,44 +26,18 @@
         </div>
 
         <!-- Sidebar Menu -->
-        <ul class="sidebar-menu">
-
-            <li>
-                <a href="#">Dashboard</a>
-            </li>
-
-            <li>
-                <a href="#">Jobs</a>
-            </li>
-
-            <li>
-                <a href="#">Resumes</a>
-            </li>
-
-            <li>
-                <a href="#">Candidates</a>
-            </li>
-
-            <li>
-                <a href="#">Ranking</a>
-            </li>
-
-            <li>
-                <a href="#">Reports</a>
-            </li>
-
-            <li>
-                <a href="#">Analytics</a>
-            </li>
-
-            <!-- Logout -->
-            <li>
-                <a href="{{ url_for('auth.logout') }}">
-                    Logout
-                </a>
-            </li>
-
-        </ul>
+    <ul class="sidebar-menu">
+        <li><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+        <li><a href="#">Jobs</a></li>
+        <li><a href="#">Resumes</a></li>
+        <li><a href="#">Candidates</a></li>
+        <li><a href="#">Ranking</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="#">Analytics</a></li>
+        <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+        <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+    </ul>
 
     </aside>
 
@@ -84,7 +58,7 @@
             </div>
 
             <div class="admin-box">
-                <span>Admin / HR</span>
+                <span>{{ session.get("user_name", "Admin / HR") }}</span>
             </div>
 
         </nav>

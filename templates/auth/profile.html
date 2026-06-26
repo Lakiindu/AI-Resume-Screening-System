@@ -1,0 +1,54 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Profile | AI Resume Screening System" %}
+{% set page_title = "Admin Profile" %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-4">Profile Information</h5>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="mb-3">
+    <label for="name" class="form-label">Admin Name</label>
+    <input
+        id="name"
+        type="text"
+        name="name"
+        class="form-control"
+        value="{{ user.name }}"
+        placeholder="Enter your name"
+        required>
+</div>
+
+<div class="mb-3">
+    <label for="email" class="form-label">Email Address</label>
+    <input
+        id="email"
+        type="email"
+        name="email"
+        class="form-control"
+        value="{{ user.email }}"
+        placeholder="Enter your email"
+        required>
+</div>
+
+            <button type="submit" class="btn btn-primary">
+                Update Profile
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
