@@ -32,7 +32,7 @@ def login():
             session["user_email"] = user["email"]
 
             flash("Login successful.", "success")
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("dashboard.index"))
 
         flash("Invalid email or password.", "danger")
 
