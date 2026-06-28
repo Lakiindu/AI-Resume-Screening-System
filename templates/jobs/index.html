@@ -35,6 +35,7 @@
                             <th>Salary</th>
                             <th>Status</th>
                             <th>Created</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -62,6 +63,19 @@
                                 </td>
 
                                 <td>{{ job.created_at }}</td>
+
+                                <td>
+                                    <a href="{{ url_for('jobs.view', job_id=job.id) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+
+                                    <a href="{{ url_for('jobs.edit', job_id=job.id) }}"
+                                       class="btn btn-sm btn-outline-warning">
+                                        Edit
+                                    </a>
+                                </td>
+
                             </tr>
 
                         {% endfor %}

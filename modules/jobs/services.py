@@ -60,3 +60,63 @@ def get_all_jobs():
     connection.close()
 
     return jobs
+
+
+def get_job_by_id(job_id):
+    """
+    Gets one job by ID.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT *
+        FROM jobs
+        WHERE id = %s
+    """, (job_id,))
+
+    job = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    return job
+
+
+def update_job(job_id, data):
+    """
+    Updates an existing job vacancy.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    query = """
+        UPDATE jobs
+        SET job_title = %s,
+            department = %s,
+            location = %s,
+            experience_required = %s,
+            salary = %s,
+            required_skills = %s,
+            description = %s,
+            status = %s
+        WHERE id = %s
+    """
+
+    values = (
+        data["job_title"],
+        data["department"],
+        data["location"],
+        data["experience_required"],
+        data["salary"],
+        data["required_skills"],
+        data["description"],
+        data["status"],
+        job_id
+    )
+
+    cursor.execute(query, values)
+    connection.commit()
+
+    cursor.close()
+    connection.close()

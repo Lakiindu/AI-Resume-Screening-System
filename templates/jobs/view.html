@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "View Job | AI Resume Screening System" %}
+{% set page_title = "Job Details" %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h4 class="fw-bold mb-1">{{ job.job_title }}</h4>
+                <p class="text-muted mb-0">{{ job.department }} · {{ job.location }}</p>
+            </div>
+
+            {% if job.status == 'active' %}
+                <span class="badge bg-success px-3 py-2">Active</span>
+            {% else %}
+                <span class="badge bg-secondary px-3 py-2">Closed</span>
+            {% endif %}
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <p class="text-muted mb-1">Experience Required</p>
+                <h6>{{ job.experience_required }}</h6>
+            </div>
+
+            <div class="col-md-4">
+                <p class="text-muted mb-1">Salary</p>
+                <h6>{{ job.salary }}</h6>
+            </div>
+
+            <div class="col-md-4">
+                <p class="text-muted mb-1">Created At</p>
+                <h6>{{ job.created_at }}</h6>
+            </div>
+        </div>
+
+        <hr>
+
+        <h6 class="fw-bold">Required Skills</h6>
+        <p>{{ job.required_skills }}</p>
+
+        <h6 class="fw-bold mt-4">Job Description</h6>
+        <p>{{ job.description }}</p>
+
+        <div class="d-flex gap-2 mt-4">
+            <a href="{{ url_for('jobs.edit', job_id=job.id) }}" class="btn btn-warning">
+                Edit Job
+            </a>
+
+            <a href="{{ url_for('jobs.index') }}" class="btn btn-light">
+                Back
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
