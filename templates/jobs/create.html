@@ -1,0 +1,83 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Add Job | AI Resume Screening System" %}
+{% set page_title = "Add New Job" %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">Job Information</h5>
+
+        <form method="POST">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="job_title" class="form-label">Job Title</label>
+                    <input type="text" id="job_title" name="job_title" class="form-control"
+                           placeholder="Enter job title" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <input type="text" id="department" name="department" class="form-control"
+                           placeholder="Enter department" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" id="location" name="location" class="form-control"
+                           placeholder="Enter job location" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="experience_required" class="form-label">Experience Required</label>
+                    <input type="text" id="experience_required" name="experience_required"
+                           class="form-control" placeholder="Example: 2 years" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="salary" class="form-label">Salary</label>
+                <input type="text" id="salary" name="salary" class="form-control"
+                       placeholder="Example: 150,000 LKR">
+            </div>
+
+            <div class="mb-3">
+                <label for="required_skills" class="form-label">Required Skills</label>
+                <textarea id="required_skills" name="required_skills" class="form-control"
+                          rows="3" placeholder="Python, Flask, MySQL, Machine Learning" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Job Description</label>
+                <textarea id="description" name="description" class="form-control"
+                          rows="5" placeholder="Enter job description" required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" name="status" class="form-select" required>
+                    <option value="active">Active</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    Save Job
+                </button>
+
+                <a href="{{ url_for('jobs.index') }}" class="btn btn-light px-4">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
