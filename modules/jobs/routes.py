@@ -4,7 +4,9 @@ from modules.jobs.services import (
     create_job,
     get_all_jobs,
     get_job_by_id,
-    update_job
+    update_job,
+    delete_job,
+    search_jobs
 )
 
 jobs_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
@@ -14,10 +16,16 @@ jobs_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 @login_required
 def index():
     """
-    Displays all jobs.
+    Displays all jobs with optional search.
     """
-    jobs = get_all_jobs()
-    return render_template("jobs/index.html", jobs=jobs)
+    keyword = request.args.get("keyword")
+
+    if keyword:
+        jobs = search_jobs(keyword)
+    else:
+        jobs = get_all_jobs()
+
+    return render_template("jobs/index.html", jobs=jobs, keyword=keyword)
 
 
 @jobs_bp.route("/create", methods=["GET", "POST"])
@@ -91,3 +99,21 @@ def edit(job_id):
         return redirect(url_for("jobs.view", job_id=job_id))
 
     return render_template("jobs/edit.html", job=job)
+
+
+@jobs_bp.route("/<int:job_id>/delete", methods=["POST"])
+@login_required
+def delete(job_id):
+    """
+    Deletes selected job.
+    """
+    job = get_job_by_id(job_id)
+
+    if not job:
+        flash("Job not found.", "danger")
+        return redirect(url_for("jobs.index"))
+
+    delete_job(job_id)
+
+    flash("Job deleted successfully.", "success")
+    return redirect(url_for("jobs.index"))

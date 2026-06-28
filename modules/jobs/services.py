@@ -120,3 +120,55 @@ def update_job(job_id, data):
 
     cursor.close()
     connection.close()
+
+
+def delete_job(job_id):
+    """
+    Deletes a job from the database.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM jobs
+        WHERE id = %s
+    """, (job_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+
+def search_jobs(keyword):
+    """
+    Searches jobs by title, department, location, skills, or status.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    search_value = f"%{keyword}%"
+
+    cursor.execute("""
+        SELECT *
+        FROM jobs
+        WHERE job_title LIKE %s
+           OR department LIKE %s
+           OR location LIKE %s
+           OR required_skills LIKE %s
+           OR status LIKE %s
+        ORDER BY created_at DESC
+    """, (
+        search_value,
+        search_value,
+        search_value,
+        search_value,
+        search_value
+    ))
+
+    jobs = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return jobs

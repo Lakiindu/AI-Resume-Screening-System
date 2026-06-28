@@ -18,6 +18,36 @@
     </a>
 </div>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="GET" action="{{ url_for('jobs.index') }}" class="mb-4">
+    <div class="input-group">
+        <input
+            type="text"
+            name="keyword"
+            class="form-control"
+            placeholder="Search jobs by title, department, location, skills, or status"
+            value="{{ keyword if keyword else '' }}"
+        >
+
+        <button class="btn btn-primary" type="submit">
+            Search
+        </button>
+
+        <a href="{{ url_for('jobs.index') }}" class="btn btn-light">
+            Reset
+        </a>
+    </div>
+</form>
+
 <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body">
 
@@ -40,9 +70,7 @@
                     </thead>
 
                     <tbody>
-
                         {% for job in jobs %}
-
                             <tr>
                                 <td>{{ job.job_title }}</td>
                                 <td>{{ job.department }}</td>
@@ -52,19 +80,15 @@
 
                                 <td>
                                     {% if job.status == "active" %}
-                                        <span class="badge bg-success">
-                                            Active
-                                        </span>
+                                        <span class="badge bg-success">Active</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">
-                                            Closed
-                                        </span>
+                                        <span class="badge bg-secondary">Closed</span>
                                     {% endif %}
                                 </td>
 
                                 <td>{{ job.created_at }}</td>
 
-                                <td>
+                                <td class="d-flex gap-1 flex-wrap">
                                     <a href="{{ url_for('jobs.view', job_id=job.id) }}"
                                        class="btn btn-sm btn-outline-primary">
                                         View
@@ -74,12 +98,20 @@
                                        class="btn btn-sm btn-outline-warning">
                                         Edit
                                     </a>
+
+                                    <form method="POST"
+                                          action="{{ url_for('jobs.delete', job_id=job.id) }}"
+                                          class="d-inline">
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Are you sure you want to delete this job?');">
+                                            Delete
+                                        </button>
+                                    </form>
                                 </td>
-
                             </tr>
-
                         {% endfor %}
-
                     </tbody>
 
                 </table>
@@ -88,7 +120,7 @@
         {% else %}
 
             <div class="text-center py-5">
-                <h5 class="text-muted">No jobs added yet.</h5>
+                <h5 class="text-muted">No jobs found.</h5>
                 <p class="text-muted">
                     Click <strong>+ Add Job</strong> to create your first vacancy.
                 </p>
