@@ -6,7 +6,8 @@ from modules.jobs.services import (
     get_job_by_id,
     update_job,
     delete_job,
-    search_jobs
+    search_jobs,
+    get_job_statistics
 )
 
 jobs_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
@@ -16,16 +17,25 @@ jobs_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 @login_required
 def index():
     """
-    Displays all jobs with optional search.
+    Displays all jobs with optional search and sorting.
     """
     keyword = request.args.get("keyword")
+    sort = request.args.get("sort", "latest")
 
     if keyword:
-        jobs = search_jobs(keyword)
+        jobs = search_jobs(keyword, sort)
     else:
-        jobs = get_all_jobs()
+        jobs = get_all_jobs(sort)
 
-    return render_template("jobs/index.html", jobs=jobs, keyword=keyword)
+    stats = get_job_statistics()
+
+    return render_template(
+        "jobs/index.html",
+        jobs=jobs,
+        keyword=keyword,
+        sort=sort,
+        stats=stats
+    )
 
 
 @jobs_bp.route("/create", methods=["GET", "POST"])

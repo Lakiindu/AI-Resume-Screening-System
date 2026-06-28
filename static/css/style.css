@@ -193,3 +193,35 @@ body {
     color: #64748b;
     font-size: 14px;
 }
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    color: #64748b;
+    font-size: 13px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table tbody tr {
+    transition: 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.btn-sm {
+    border-radius: 10px;
+}
+
+.input-group-text {
+    border-radius: 14px 0 0 14px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 14px;
+}

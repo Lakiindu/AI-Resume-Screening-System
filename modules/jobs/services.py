@@ -40,20 +40,23 @@ def create_job(data):
     cursor.close()
     connection.close()
 
-
-def get_all_jobs():
+def get_all_jobs(sort="latest"):
     """
-    Gets all jobs from the database.
+    Gets all jobs from the database with sorting.
     """
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT *
-        FROM jobs
-        ORDER BY created_at DESC
-    """)
+    if sort == "oldest":
+        query = "SELECT * FROM jobs ORDER BY created_at ASC"
+    elif sort == "active":
+        query = "SELECT * FROM jobs WHERE status='active' ORDER BY created_at DESC"
+    elif sort == "closed":
+        query = "SELECT * FROM jobs WHERE status='closed' ORDER BY created_at DESC"
+    else:
+        query = "SELECT * FROM jobs ORDER BY created_at DESC"
 
+    cursor.execute(query)
     jobs = cursor.fetchall()
 
     cursor.close()
@@ -140,16 +143,16 @@ def delete_job(job_id):
     connection.close()
 
 
-def search_jobs(keyword):
+def search_jobs(keyword, sort="latest"):
     """
-    Searches jobs by title, department, location, skills, or status.
+    Searches jobs with optional sorting.
     """
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
     search_value = f"%{keyword}%"
 
-    cursor.execute("""
+    base_query = """
         SELECT *
         FROM jobs
         WHERE job_title LIKE %s
@@ -157,8 +160,18 @@ def search_jobs(keyword):
            OR location LIKE %s
            OR required_skills LIKE %s
            OR status LIKE %s
-        ORDER BY created_at DESC
-    """, (
+    """
+
+    if sort == "oldest":
+        base_query += " ORDER BY created_at ASC"
+    elif sort == "active":
+        base_query += " AND status='active' ORDER BY created_at DESC"
+    elif sort == "closed":
+        base_query += " AND status='closed' ORDER BY created_at DESC"
+    else:
+        base_query += " ORDER BY created_at DESC"
+
+    cursor.execute(base_query, (
         search_value,
         search_value,
         search_value,
@@ -172,3 +185,28 @@ def search_jobs(keyword):
     connection.close()
 
     return jobs
+
+def get_job_statistics():
+    """
+    Returns job statistics for the Jobs dashboard.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) AS total FROM jobs")
+    total = cursor.fetchone()["total"]
+
+    cursor.execute("SELECT COUNT(*) AS active FROM jobs WHERE status='active'")
+    active = cursor.fetchone()["active"]
+
+    cursor.execute("SELECT COUNT(*) AS closed FROM jobs WHERE status='closed'")
+    closed = cursor.fetchone()["closed"]
+
+    cursor.close()
+    connection.close()
+
+    return {
+        "total": total,
+        "active": active,
+        "closed": closed
+    }
