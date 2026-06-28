@@ -1,39 +1,153 @@
 {% extends "layouts/base.html" %}
 
 {% set title = "Dashboard | AI Resume Screening System" %}
-{% set page_title = "Dashboard" %}
+{% set page_title = "Dashboard Overview" %}
 
 {% block content %}
 
+<div class="row g-4 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Total Jobs</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-blue">💼</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Total Resumes</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-green">📄</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Pending Candidates</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-orange">⏳</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Shortlisted</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-purple">✅</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Rejected</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-red">❌</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Average Match Score</p>
+                <h3>0%</h3>
+            </div>
+            <div class="stat-icon bg-blue">📊</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Total Skills Extracted</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-green">🧠</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div>
+                <p>Recent Uploads</p>
+                <h3>0</h3>
+            </div>
+            <div class="stat-icon bg-orange">📤</div>
+        </div>
+    </div>
+
+</div>
+
 <div class="row g-4">
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <p class="text-muted mb-1">Total Jobs</p>
-                <h3>0</h3>
+    <div class="col-lg-8">
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h5>Resume Upload Trend</h5>
+                <span>Last 7 days</span>
             </div>
+            <canvas id="uploadTrendChart"></canvas>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <p class="text-muted mb-1">Total Resumes</p>
-                <h3>0</h3>
+    <div class="col-lg-4">
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h5>Candidate Status</h5>
+                <span>Overview</span>
             </div>
+            <canvas id="candidateStatusChart"></canvas>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <p class="text-muted mb-1">Average Match Score</p>
-                <h3>0%</h3>
+</div>
+
+<div class="row g-4 mt-1">
+
+    <div class="col-lg-6">
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h5>Match Score Distribution</h5>
+                <span>AI results</span>
+            </div>
+            <canvas id="scoreDistributionChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h5>Recent Activity</h5>
+                <span>Latest updates</span>
+            </div>
+
+            <div class="activity-list">
+                <div class="activity-item">
+                    <strong>No recent activity yet</strong>
+                    <p>Activities will appear after jobs and resumes are added.</p>
+                </div>
             </div>
         </div>
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 {% endblock %}
