@@ -114,13 +114,21 @@
                                             <i class="bi bi-download"></i>
                                         </a>
 
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-info btn-sm"
-                                            title="AI Screening"
-                                            disabled>
-                                            <i class="bi bi-cpu"></i>
-                                        </button>
+                                        <!-- AI Parse Resume -->
+                                        <!-- AI Parse Resume -->
+                            <form
+                                method="POST"
+                                action="{{ url_for('resumes.parse', resume_id=resume.id) }}"
+                                class="d-inline">
+                                
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-info btn-sm"
+                                    title="Parse Resume">
+                                    <i class="bi bi-cpu"></i>
+                                </button>
+
+                            </form>
 
                                         <button
                                             type="button"

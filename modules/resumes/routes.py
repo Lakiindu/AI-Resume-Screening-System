@@ -2,14 +2,19 @@ import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
 from config import Config
 from modules.auth.decorators import login_required
+
+from modules.resumes.parser import parse_resume
+
 from modules.resumes.services import (
     save_resume,
     get_all_resumes,
     get_resume_by_id,
     delete_resume_record,
     search_resumes,
-    is_duplicate_resume
+    is_duplicate_resume,
+    save_resume_details
 )
+
 from modules.resumes.utils import (
     allowed_file,
     generate_unique_filename,
@@ -81,6 +86,26 @@ def upload():
         return redirect(url_for("resumes.index"))
 
     return render_template("resumes/upload.html")
+
+
+@resumes_bp.route("/<int:resume_id>/parse", methods=["POST"])
+@login_required
+def parse(resume_id):
+    """
+    Parses selected resume PDF and saves extracted data.
+    """
+    resume = get_resume_by_id(resume_id)
+
+    if not resume:
+        flash("Resume not found.", "danger")
+        return redirect(url_for("resumes.index"))
+
+    parsed_data = parse_resume(resume["file_path"])
+
+    save_resume_details(resume_id, parsed_data)
+
+    flash("Resume parsed successfully.", "success")
+    return redirect(url_for("resumes.index"))
 
 
 @resumes_bp.route("/<int:resume_id>/preview")

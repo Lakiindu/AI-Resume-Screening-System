@@ -118,3 +118,51 @@ def is_duplicate_resume(original_filename):
     connection.close()
 
     return resume is not None
+
+def save_resume_details(resume_id, parsed_data):
+    """
+    Saves parsed resume details into resume_details table.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM resume_details
+        WHERE resume_id = %s
+    """, (resume_id,))
+
+    query = """
+        INSERT INTO resume_details
+        (
+            resume_id,
+            extracted_text,
+            extracted_email,
+            extracted_phone,
+            extracted_skills,
+            education,
+            experience,
+            projects,
+            certificates,
+            languages
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    values = (
+        resume_id,
+        parsed_data["extracted_text"],
+        parsed_data["extracted_email"],
+        parsed_data["extracted_phone"],
+        parsed_data["extracted_skills"],
+        parsed_data["education"],
+        parsed_data["experience"],
+        parsed_data["projects"],
+        parsed_data["certificates"],
+        parsed_data["languages"]
+    )
+
+    cursor.execute(query, values)
+    connection.commit()
+
+    cursor.close()
+    connection.close()
