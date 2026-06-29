@@ -1,0 +1,219 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Resumes | AI Resume Screening System" %}
+{% set page_title = "Resume Management" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Resumes</h4>
+        <p class="text-muted mb-0">
+            Manage uploaded candidate resumes.
+        </p>
+    </div>
+
+    <a href="{{ url_for('resumes.upload') }}" class="btn btn-primary rounded-pill px-4">
+        + Upload Resume
+    </a>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="GET" action="{{ url_for('resumes.index') }}" class="mb-4">
+    <div class="input-group">
+        <span class="input-group-text bg-white">
+            <i class="bi bi-search"></i>
+        </span>
+
+        <input
+            type="text"
+            name="keyword"
+            class="form-control"
+            placeholder="Search by candidate, email, phone, filename, or status"
+            value="{{ keyword if keyword else '' }}"
+        >
+
+        <button class="btn btn-primary" type="submit">
+            Search
+        </button>
+
+        <a href="{{ url_for('resumes.index') }}" class="btn btn-light">
+            Reset
+        </a>
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+
+        {% if resumes %}
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>File</th>
+                            <th>Size</th>
+                            <th>Status</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for resume in resumes %}
+                            <tr>
+                                <td>{{ resume.candidate_name }}</td>
+                                <td>{{ resume.email }}</td>
+                                <td>{{ resume.phone }}</td>
+                                <td>{{ resume.original_filename }}</td>
+                                <td>{{ (resume.file_size / 1024)|round(1) }} KB</td>
+
+                                <td>
+                                    <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                        {{ resume.status }}
+                                    </span>
+                                </td>
+
+                                <td>{{ resume.uploaded_at.strftime("%d %b %Y") }}</td>
+
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap">
+
+                                        <a
+                                            href="{{ url_for('resumes.preview', resume_id=resume.id) }}"
+                                            target="_blank"
+                                            class="btn btn-outline-primary btn-sm"
+                                            title="Preview">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a
+                                            href="{{ url_for('resumes.download', resume_id=resume.id) }}"
+                                            class="btn btn-outline-success btn-sm"
+                                            title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-info btn-sm"
+                                            title="AI Screening"
+                                            disabled>
+                                            <i class="bi bi-cpu"></i>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-danger btn-sm"
+                                            title="Delete"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteResumeModal{{ resume.id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <div class="modal fade" id="deleteResumeModal{{ resume.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 rounded-4">
+
+                                        <div class="modal-header border-0">
+                                            <h5 class="modal-title fw-bold">
+                                                Delete Resume
+                                            </h5>
+
+                                            <button
+                                                type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                            </button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <p class="mb-1">
+                                                Are you sure you want to delete this resume?
+                                            </p>
+
+                                            <strong>{{ resume.original_filename }}</strong>
+
+                                            <p class="text-muted mt-2 mb-0">
+                                                This will remove both the database record and uploaded PDF file.
+                                            </p>
+                                        </div>
+
+                                        <div class="modal-footer border-0">
+                                            <button
+                                                type="button"
+                                                class="btn btn-light"
+                                                data-bs-dismiss="modal">
+                                                Cancel
+                                            </button>
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for('resumes.delete', resume_id=resume.id) }}">
+                                                <button type="submit" class="btn btn-danger">
+                                                    Yes, Delete
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="mt-3">
+                <small class="text-muted">
+                    Showing {{ resumes|length }} resume result(s)
+                </small>
+            </div>
+
+        {% else %}
+
+            <div class="text-center py-5">
+                <i class="bi bi-file-earmark-person display-3 text-secondary"></i>
+
+                <h4 class="mt-3">
+                    No Resumes Uploaded
+                </h4>
+
+                <p class="text-muted">
+                    Upload candidate resumes to start AI screening.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

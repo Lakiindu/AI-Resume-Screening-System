@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Upload Resume | AI Resume Screening System" %}
+{% set page_title = "Upload Resume" %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">Candidate Resume Upload</h5>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label for="candidate_name" class="form-label">Candidate Name</label>
+                <input
+                    type="text"
+                    id="candidate_name"
+                    name="candidate_name"
+                    class="form-control"
+                    placeholder="Enter candidate name"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter email address">
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    class="form-control"
+                    placeholder="Enter phone number">
+            </div>
+
+            <div class="mb-4">
+                <label for="resume_file" class="form-label">PDF Resume</label>
+                <input
+                    type="file"
+                    id="resume_file"
+                    name="resume_file"
+                    class="form-control"
+                    accept=".pdf"
+                    required>
+                <small class="text-muted">
+                    Only PDF files are allowed. Maximum size: 5MB.
+                </small>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    Upload Resume
+                </button>
+
+                <a href="{{ url_for('resumes.index') }}" class="btn btn-light px-4">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
