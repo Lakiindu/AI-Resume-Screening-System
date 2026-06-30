@@ -1,0 +1,104 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Candidate Ranking" %}
+{% set page_title = "Candidate Ranking" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h3 class="fw-bold">
+            AI Candidate Ranking
+        </h3>
+
+        <p class="text-muted">
+            Candidates sorted by AI Match Score.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card shadow-sm border-0 rounded-4">
+
+<div class="card-body">
+
+<table class="table align-middle table-hover">
+
+<thead class="table-light">
+
+<tr>
+
+<th>#</th>
+
+<th>Candidate</th>
+
+<th>Job</th>
+
+<th>Email</th>
+
+<th>AI Score</th>
+
+<th>Recommendation</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for candidate in rankings %}
+
+<tr>
+
+<td>
+
+<strong>{{ loop.index }}</strong>
+
+</td>
+
+<td>
+
+{{ candidate.candidate_name }}
+
+</td>
+
+<td>
+
+{{ candidate.job_title }}
+
+</td>
+
+<td>
+
+{{ candidate.email }}
+
+</td>
+
+<td>
+
+<strong>{{ candidate.final_score }}%</strong>
+
+</td>
+
+<td>
+
+{{ candidate.recommendation }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

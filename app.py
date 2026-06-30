@@ -6,6 +6,7 @@ from modules.auth.routes import auth_bp
 from modules.dashboard.routes import dashboard_bp
 from modules.jobs.routes import jobs_bp
 from modules.resumes.routes import resumes_bp
+from modules.ranking.routes import ranking_bp
 
 # Create Flask application
 app = Flask(__name__)
@@ -18,6 +19,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(jobs_bp)
 app.register_blueprint(resumes_bp)
+app.register_blueprint(ranking_bp)
 
 # Custom 404 Error Page
 @app.errorhandler(404)
