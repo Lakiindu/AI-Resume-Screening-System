@@ -225,3 +225,7 @@ body {
 .form-select {
     border-radius: 14px;
 }
+
+.match-progress {
+    height: 12px;
+}

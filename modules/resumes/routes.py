@@ -14,7 +14,8 @@ from modules.resumes.services import (
     is_duplicate_resume,
     save_resume_details,
     get_resume_details_by_resume_id,
-    save_match_result
+    save_match_result,
+    get_match_result_by_resume_and_job
 )
 
 from modules.resumes.utils import (
@@ -46,9 +47,6 @@ def index():
 @resumes_bp.route("/upload", methods=["GET", "POST"])
 @login_required
 def upload():
-    """
-    Uploads PDF resume and saves file data.
-    """
     if request.method == "POST":
         candidate_name = request.form.get("candidate_name")
         email = request.form.get("email")
@@ -73,7 +71,6 @@ def upload():
         file_path = os.path.join(Config.UPLOAD_FOLDER, stored_filename)
 
         file.save(file_path)
-
         file_size = os.path.getsize(file_path)
 
         data = {
@@ -97,9 +94,6 @@ def upload():
 @resumes_bp.route("/<int:resume_id>/parse", methods=["POST"])
 @login_required
 def parse(resume_id):
-    """
-    Parses selected resume PDF and saves extracted data.
-    """
     resume = get_resume_by_id(resume_id)
 
     if not resume:
@@ -107,7 +101,6 @@ def parse(resume_id):
         return redirect(url_for("resumes.index"))
 
     parsed_data = parse_resume(resume["file_path"])
-
     save_resume_details(resume_id, parsed_data)
 
     flash("Resume parsed successfully.", "success")
@@ -117,9 +110,6 @@ def parse(resume_id):
 @resumes_bp.route("/<int:resume_id>/match", methods=["GET", "POST"])
 @login_required
 def match(resume_id):
-    """
-    Allows admin to select a job and run AI matching.
-    """
     resume = get_resume_by_id(resume_id)
 
     if not resume:
@@ -136,7 +126,6 @@ def match(resume_id):
 
     if request.method == "POST":
         job_id = request.form.get("job_id")
-
         job = get_job_by_id(job_id)
 
         if not job:
@@ -144,17 +133,32 @@ def match(resume_id):
             return redirect(url_for("resumes.match", resume_id=resume_id))
 
         match_data = generate_match_result(job, resume_details)
-
         save_match_result(resume_id, job_id, match_data)
 
         flash("AI matching completed successfully.", "success")
-        return redirect(url_for("resumes.index"))
+        return redirect(url_for(
+            "resumes.match_result",
+            resume_id=resume_id,
+            job_id=job_id
+        ))
 
     return render_template(
         "resumes/match.html",
         resume=resume,
         jobs=jobs
     )
+
+
+@resumes_bp.route("/<int:resume_id>/match-result/<int:job_id>")
+@login_required
+def match_result(resume_id, job_id):
+    result = get_match_result_by_resume_and_job(resume_id, job_id)
+
+    if not result:
+        flash("AI match result not found.", "warning")
+        return redirect(url_for("resumes.index"))
+
+    return render_template("resumes/match_result.html", result=result)
 
 
 @resumes_bp.route("/<int:resume_id>/preview")

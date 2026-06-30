@@ -1,0 +1,195 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "AI Match Result | AI Resume Screening System" %}
+{% set page_title = "AI Match Result" %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 text-center">
+
+                <p class="text-muted mb-1">Final AI Match Score</p>
+
+                {% if result.final_score >= 80 %}
+                    <h1 class="fw-bold text-success">{{ result.final_score }}%</h1>
+                    <span class="badge bg-success rounded-pill px-3 py-2">
+                        {{ result.recommendation }}
+                    </span>
+                {% elif result.final_score >= 60 %}
+                    <h1 class="fw-bold text-primary">{{ result.final_score }}%</h1>
+                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                        {{ result.recommendation }}
+                    </span>
+                {% elif result.final_score >= 40 %}
+                    <h1 class="fw-bold text-warning">{{ result.final_score }}%</h1>
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                        {{ result.recommendation }}
+                    </span>
+                {% else %}
+                    <h1 class="fw-bold text-danger">{{ result.final_score }}%</h1>
+                    <span class="badge bg-danger rounded-pill px-3 py-2">
+                        {{ result.recommendation }}
+                    </span>
+                {% endif %}
+
+                <hr>
+
+                <p class="text-muted mb-1">Candidate</p>
+                <h5 class="fw-bold">{{ result.candidate_name }}</h5>
+
+                <p class="text-muted mb-1 mt-3">Applied Job</p>
+                <h6>{{ result.job_title }}</h6>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-4">Score Breakdown</h5>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <span>TF-IDF Similarity</span>
+                        <strong>{{ result.similarity_score }}%</strong>
+                    </div>
+                    <div class="progress mt-2 match-progress">
+                        <div
+                            class="progress-bar bg-info ai-progress-bar"
+                            data-score="{{ result.similarity_score }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <span>Skill Match Score</span>
+                        <strong>{{ result.skill_score }}%</strong>
+                    </div>
+                    <div class="progress mt-2 match-progress">
+                        <div
+                            class="progress-bar bg-success ai-progress-bar"
+                            data-score="{{ result.skill_score }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="d-flex justify-content-between">
+                        <span>Final Weighted Score</span>
+                        <strong>{{ result.final_score }}%</strong>
+                    </div>
+                    <div class="progress mt-2 match-progress">
+                        <div
+                            class="progress-bar bg-primary ai-progress-bar"
+                            data-score="{{ result.final_score }}">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-3 text-success">Matched Skills</h5>
+
+                {% if result.matched_skills %}
+                    {% for skill in result.matched_skills.split(",") %}
+                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 mb-2">
+                            ✔ {{ skill.strip() }}
+                        </span>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No matched skills detected.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-3 text-danger">Missing Skills</h5>
+
+                {% if result.missing_skills %}
+                    {% for skill in result.missing_skills.split(",") %}
+                        <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 mb-2">
+                            ✖ {{ skill.strip() }}
+                        </span>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No missing skills detected.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mt-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-3">Candidate & Job Information</h5>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p class="text-muted mb-1">Email</p>
+                <h6>{{ result.email }}</h6>
+            </div>
+
+            <div class="col-md-6">
+                <p class="text-muted mb-1">Phone</p>
+                <h6>{{ result.phone }}</h6>
+            </div>
+
+            <div class="col-md-6 mt-3">
+                <p class="text-muted mb-1">Department</p>
+                <h6>{{ result.department }}</h6>
+            </div>
+
+            <div class="col-md-6 mt-3">
+                <p class="text-muted mb-1">Location</p>
+                <h6>{{ result.location }}</h6>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <a href="{{ url_for('resumes.index') }}" class="btn btn-light">
+                Back to Resumes
+            </a>
+
+            <a href="{{ url_for('resumes.match', resume_id=result.resume_id) }}" class="btn btn-primary">
+                Run Match Again
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".ai-progress-bar").forEach(function (bar) {
+        const score = bar.dataset.score || 0;
+        bar.style.width = score + "%";
+        bar.setAttribute("aria-valuenow", score);
+        bar.setAttribute("aria-valuemin", "0");
+        bar.setAttribute("aria-valuemax", "100");
+    });
+</script>
+
+{% endblock %}

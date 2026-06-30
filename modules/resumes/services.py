@@ -229,4 +229,36 @@ def save_match_result(resume_id, job_id, match_data):
     connection.commit()
 
     cursor.close()
-    connection.close()  
+    connection.close()
+
+def get_match_result_by_resume_and_job(resume_id, job_id):
+    """
+    Gets AI match result with resume and job details.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            mr.*,
+            r.candidate_name,
+            r.email,
+            r.phone,
+            r.original_filename,
+            j.job_title,
+            j.department,
+            j.location
+        FROM match_results mr
+        JOIN resumes r ON mr.resume_id = r.id
+        JOIN jobs j ON mr.job_id = j.id
+        WHERE mr.resume_id = %s AND mr.job_id = %s
+        ORDER BY mr.matched_at DESC
+        LIMIT 1
+    """, (resume_id, job_id))
+
+    result = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    return result
