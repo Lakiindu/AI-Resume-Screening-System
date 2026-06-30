@@ -5,130 +5,150 @@ import pdfplumber
 SKILL_KEYWORDS = [
     "python", "flask", "django", "mysql", "postgresql", "html", "css",
     "javascript", "bootstrap", "react", "node.js", "machine learning",
-    "data analysis", "sql", "git", "github", "api", "nlp", "scikit-learn",
+    "deep learning", "tensorflow", "pandas", "numpy", "scikit-learn",
+    "data analysis", "sql", "git", "github", "api", "rest api", "nlp",
     "java", "php", "laravel", "c++", "figma", "power bi", "excel"
 ]
 
+LANGUAGE_KEYWORDS = [
+    "english", "sinhala", "tamil", "japanese", "hindi", "french"
+]
 
-SECTION_KEYWORDS = {
-    "education": ["education", "academic background", "qualifications"],
-    "experience": ["experience", "work experience", "employment history", "internship"],
-    "projects": ["projects", "academic projects", "personal projects"],
-    "certificates": ["certificates", "certifications", "courses"],
-    "languages": ["languages", "language skills"]
-}
+CERTIFICATE_KEYWORDS = [
+    "certificate", "certification", "certified", "coursera", "udemy",
+    "google", "microsoft", "aws", "cisco", "oracle", "linkedin learning"
+]
 
 
 def extract_text_from_pdf(file_path):
-    """
-    Reads all text from a PDF resume using pdfplumber.
-    """
     text = ""
 
     with pdfplumber.open(file_path) as pdf:
         for page in pdf.pages:
             page_text = page.extract_text()
-
             if page_text:
                 text += page_text + "\n"
 
     return text
 
 
-def extract_email(text):
-    """
-    Extracts email address using regex.
-    """
-    email_pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
-    match = re.search(email_pattern, text)
+def clean_lines(text):
+    return [line.strip() for line in text.split("\n") if line.strip()]
 
+
+def extract_email(text):
+    pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+    match = re.search(pattern, text)
     return match.group(0) if match else ""
 
 
 def extract_phone(text):
-    """
-    Extracts phone number using regex.
-    """
-    phone_pattern = r"(\+?\d[\d\s\-]{8,}\d)"
-    match = re.search(phone_pattern, text)
-
+    pattern = r"(\+?\d[\d\s\-]{8,}\d)"
+    match = re.search(pattern, text)
     return match.group(0) if match else ""
 
 
 def extract_skills(text):
-    """
-    Finds matching skills from predefined skill keywords.
-    """
     text_lower = text.lower()
-    found_skills = []
+    found = []
 
     for skill in SKILL_KEYWORDS:
-        if skill.lower() in text_lower:
-            found_skills.append(skill)
+        if skill in text_lower:
+            found.append(skill)
 
-    return ", ".join(sorted(set(found_skills)))
-
-
-def clean_lines(text):
-    """
-    Splits resume text into clean lines.
-    """
-    lines = text.split("\n")
-    return [line.strip() for line in lines if line.strip()]
+    return ", ".join(sorted(set(found)))
 
 
-def find_section_content(text, section_name):
-    """
-    Extracts content under a section heading.
-    Example:
-    Education
-    BSc in IT
-    University name
-
-    Stops when another known section starts.
-    """
+def extract_education(text):
     lines = clean_lines(text)
-    section_aliases = SECTION_KEYWORDS[section_name]
+    education_lines = []
 
-    all_headings = []
-    for aliases in SECTION_KEYWORDS.values():
-        all_headings.extend(aliases)
-
-    collecting = False
-    collected_lines = []
+    keywords = [
+        "bsc", "bachelor", "degree", "diploma", "higher diploma",
+        "university", "institute", "college", "gce", "a/l", "o/l",
+        "information technology", "computer science"
+    ]
 
     for line in lines:
-        line_lower = line.lower().strip().replace(":", "")
+        line_lower = line.lower()
 
-        if line_lower in section_aliases:
-            collecting = True
-            continue
+        if any(keyword in line_lower for keyword in keywords):
+            education_lines.append(line)
 
-        if collecting and line_lower in all_headings:
-            break
+    return "\n".join(education_lines[:8])
 
-        if collecting:
-            collected_lines.append(line)
 
-    return "\n".join(collected_lines[:10])
+def extract_experience(text):
+    lines = clean_lines(text)
+    experience_lines = []
+
+    keywords = [
+        "experience", "intern", "internship", "trainee", "developer",
+        "engineer", "worked", "company", "years", "months"
+    ]
+
+    for line in lines:
+        line_lower = line.lower()
+
+        if any(keyword in line_lower for keyword in keywords):
+            experience_lines.append(line)
+
+    return "\n".join(experience_lines[:8])
+
+
+def extract_projects(text):
+    lines = clean_lines(text)
+    project_lines = []
+
+    keywords = [
+        "project", "system", "application", "website", "web app",
+        "management system", "portfolio", "developed", "built"
+    ]
+
+    for line in lines:
+        line_lower = line.lower()
+
+        if any(keyword in line_lower for keyword in keywords):
+            project_lines.append(line)
+
+    return "\n".join(project_lines[:10])
+
+
+def extract_certificates(text):
+    lines = clean_lines(text)
+    certificate_lines = []
+
+    for line in lines:
+        line_lower = line.lower()
+
+        if any(keyword in line_lower for keyword in CERTIFICATE_KEYWORDS):
+            certificate_lines.append(line)
+
+    return "\n".join(certificate_lines[:8])
+
+
+def extract_languages(text):
+    text_lower = text.lower()
+    found = []
+
+    for language in LANGUAGE_KEYWORDS:
+        if language in text_lower:
+            found.append(language.capitalize())
+
+    return ", ".join(sorted(set(found)))
 
 
 def parse_resume(file_path):
-    """
-    Main parser function.
-    """
     text = extract_text_from_pdf(file_path)
 
-    parsed_data = {
+    return {
         "extracted_text": text,
         "extracted_email": extract_email(text),
         "extracted_phone": extract_phone(text),
         "extracted_skills": extract_skills(text),
-        "education": find_section_content(text, "education"),
-        "experience": find_section_content(text, "experience"),
-        "projects": find_section_content(text, "projects"),
-        "certificates": find_section_content(text, "certificates"),
-        "languages": find_section_content(text, "languages")
+        "education": extract_education(text),
+        "experience": extract_experience(text),
+        "projects": extract_projects(text),
+        "certificates": extract_certificates(text),
+        "languages": extract_languages(text)
     }
-
-    return parsed_data

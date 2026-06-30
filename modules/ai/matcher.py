@@ -1,14 +1,9 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
 from modules.ai.recommendation import get_recommendation
 
 
 def calculate_similarity(job_text, resume_text):
-    """
-    Calculates TF-IDF cosine similarity between job description and resume text.
-    Returns similarity percentage.
-    """
     documents = [job_text, resume_text]
 
     vectorizer = TfidfVectorizer(stop_words="english")
@@ -20,9 +15,6 @@ def calculate_similarity(job_text, resume_text):
 
 
 def split_skills(skills_text):
-    """
-    Converts comma-separated skills text into clean skill list.
-    """
     if not skills_text:
         return []
 
@@ -34,9 +26,6 @@ def split_skills(skills_text):
 
 
 def calculate_skill_match(job_skills, resume_skills):
-    """
-    Compares required job skills with resume skills.
-    """
     required_skills = split_skills(job_skills)
     candidate_skills = split_skills(resume_skills)
 
@@ -49,10 +38,10 @@ def calculate_skill_match(job_skills, resume_skills):
         else:
             missing_skills.append(skill)
 
+    skill_score = 0
+
     if required_skills:
         skill_score = (len(matched_skills) / len(required_skills)) * 100
-    else:
-        skill_score = 0
 
     return {
         "skill_score": round(skill_score, 2),
@@ -61,20 +50,61 @@ def calculate_skill_match(job_skills, resume_skills):
     }
 
 
-def calculate_final_score(similarity_score, skill_score):
+def keyword_score(job_text, resume_section):
     """
-    Combines similarity and skill score.
+    Gives score if resume section contains words related to the job.
     """
-    final_score = (similarity_score * 0.6) + (skill_score * 0.4)
+    if not resume_section:
+        return 0
+
+    job_words = set(job_text.lower().split())
+    section_words = set(resume_section.lower().split())
+
+    common_words = job_words.intersection(section_words)
+
+    if len(common_words) >= 5:
+        return 100
+    elif len(common_words) >= 3:
+        return 70
+    elif len(common_words) >= 1:
+        return 40
+    else:
+        return 0
+
+
+def calculate_final_score(
+    similarity_score,
+    skill_score,
+    education_score,
+    experience_score,
+    project_score
+):
+    final_score = (
+        similarity_score * 0.40 +
+        skill_score * 0.35 +
+        education_score * 0.10 +
+        experience_score * 0.10 +
+        project_score * 0.05
+    )
+
     return round(final_score, 2)
 
 
 def generate_match_result(job, resume_details):
+    job_text = f"""
+        {job['job_title']}
+        {job['required_skills']}
+        {job['description']}
+        {job['experience_required']}
     """
-    Generates full AI match result for one job and one resume.
+
+    resume_text = f"""
+        {resume_details['extracted_text']}
+        {resume_details['extracted_skills']}
+        {resume_details['education']}
+        {resume_details['experience']}
+        {resume_details['projects']}
     """
-    job_text = f"{job['job_title']} {job['required_skills']} {job['description']}"
-    resume_text = f"{resume_details['extracted_text']} {resume_details['extracted_skills']}"
 
     similarity_score = calculate_similarity(job_text, resume_text)
 
@@ -83,9 +113,16 @@ def generate_match_result(job, resume_details):
         resume_details["extracted_skills"]
     )
 
+    education_score = keyword_score(job_text, resume_details["education"])
+    experience_score = keyword_score(job_text, resume_details["experience"])
+    project_score = keyword_score(job_text, resume_details["projects"])
+
     final_score = calculate_final_score(
         similarity_score,
-        skill_result["skill_score"]
+        skill_result["skill_score"],
+        education_score,
+        experience_score,
+        project_score
     )
 
     recommendation = get_recommendation(final_score)

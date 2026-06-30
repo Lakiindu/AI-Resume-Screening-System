@@ -1,5 +1,6 @@
 from database.db_connection import get_db_connection
 
+
 def save_resume(data):
     """
     Saves uploaded resume file details into MySQL.
@@ -30,6 +31,7 @@ def save_resume(data):
     cursor.close()
     connection.close()
 
+
 def get_all_resumes():
     """
     Gets all uploaded resumes.
@@ -50,6 +52,7 @@ def get_all_resumes():
 
     return resumes
 
+
 def get_resume_by_id(resume_id):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -62,6 +65,7 @@ def get_resume_by_id(resume_id):
 
     return resume
 
+
 def delete_resume_record(resume_id):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -71,6 +75,7 @@ def delete_resume_record(resume_id):
 
     cursor.close()
     connection.close()
+
 
 def search_resumes(keyword):
     connection = get_db_connection()
@@ -102,6 +107,7 @@ def search_resumes(keyword):
 
     return resumes
 
+
 def is_duplicate_resume(original_filename):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -118,6 +124,7 @@ def is_duplicate_resume(original_filename):
     connection.close()
 
     return resume is not None
+
 
 def save_resume_details(resume_id, parsed_data):
     """
@@ -166,6 +173,7 @@ def save_resume_details(resume_id, parsed_data):
 
     cursor.close()
     connection.close()
+
 
 def get_resume_details_by_resume_id(resume_id):
     """
@@ -231,27 +239,47 @@ def save_match_result(resume_id, job_id, match_data):
     cursor.close()
     connection.close()
 
+
 def get_match_result_by_resume_and_job(resume_id, job_id):
     """
-    Gets AI match result with resume and job details.
+    Gets AI match result with resume, job, and parsed resume details.
     """
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT 
+        SELECT
             mr.*,
+
             r.candidate_name,
             r.email,
             r.phone,
             r.original_filename,
+
             j.job_title,
             j.department,
-            j.location
+            j.location,
+
+            rd.education,
+            rd.experience,
+            rd.projects,
+            rd.certificates,
+            rd.languages
+
         FROM match_results mr
-        JOIN resumes r ON mr.resume_id = r.id
-        JOIN jobs j ON mr.job_id = j.id
-        WHERE mr.resume_id = %s AND mr.job_id = %s
+
+        JOIN resumes r
+        ON mr.resume_id = r.id
+
+        JOIN jobs j
+        ON mr.job_id = j.id
+
+        LEFT JOIN resume_details rd
+        ON rd.resume_id = r.id
+
+        WHERE mr.resume_id = %s
+        AND mr.job_id = %s
+
         ORDER BY mr.matched_at DESC
         LIMIT 1
     """, (resume_id, job_id))
