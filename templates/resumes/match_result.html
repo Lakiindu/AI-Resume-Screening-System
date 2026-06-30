@@ -192,42 +192,82 @@
         <div class="row g-4">
 
             <div class="col-md-6">
-                <h6 class="text-primary">Education</h6>
+                <h6 class="text-primary">
+                    Education
+                </h6>
 
                 <div class="border rounded-3 p-3 bg-light">
-                    {{ result.education if result.education else "Not detected" }}
+                    {% if result.education %}
+                        <pre class="mb-0">{{ result.education }}</pre>
+                    {% else %}
+                        <span class="text-muted">
+                            Not detected
+                        </span>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="col-md-6">
-                <h6 class="text-success">Experience</h6>
+                <h6 class="text-success">
+                    Experience
+                </h6>
 
                 <div class="border rounded-3 p-3 bg-light">
-                    {{ result.experience if result.experience else "Not detected" }}
+                    {% if result.experience %}
+                        <pre class="mb-0">{{ result.experience }}</pre>
+                    {% else %}
+                        <span class="text-muted">
+                            Not detected
+                        </span>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="col-md-6">
-                <h6 class="text-warning">Projects</h6>
+                <h6 class="text-warning">
+                    Projects
+                </h6>
 
                 <div class="border rounded-3 p-3 bg-light">
-                    {{ result.projects if result.projects else "Not detected" }}
+                    {% if result.projects %}
+                        <pre class="mb-0">{{ result.projects }}</pre>
+                    {% else %}
+                        <span class="text-muted">
+                            Not detected
+                        </span>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="col-md-6">
-                <h6 class="text-danger">Certificates</h6>
+                <h6 class="text-danger">
+                    Certificates
+                </h6>
 
                 <div class="border rounded-3 p-3 bg-light">
-                    {{ result.certificates if result.certificates else "Not detected" }}
+                    {% if result.certificates %}
+                        <pre class="mb-0">{{ result.certificates }}</pre>
+                    {% else %}
+                        <span class="text-muted">
+                            Not detected
+                        </span>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="col-md-12">
-                <h6 class="text-info">Languages</h6>
+                <h6 class="text-info">
+                    Languages
+                </h6>
 
                 <div class="border rounded-3 p-3 bg-light">
-                    {{ result.languages if result.languages else "Not detected" }}
+                    {% if result.languages %}
+                        <pre class="mb-0">{{ result.languages }}</pre>
+                    {% else %}
+                        <span class="text-muted">
+                            Not detected
+                        </span>
+                    {% endif %}
                 </div>
             </div>
 

@@ -14,10 +14,31 @@ LANGUAGE_KEYWORDS = [
     "english", "sinhala", "tamil", "japanese", "hindi", "french"
 ]
 
-CERTIFICATE_KEYWORDS = [
-    "certificate", "certification", "certified", "coursera", "udemy",
-    "google", "microsoft", "aws", "cisco", "oracle", "linkedin learning"
-]
+SECTION_HEADINGS = {
+    "education": [
+        "education", "academic background", "academic qualification",
+        "qualifications", "educational background"
+    ],
+    "experience": [
+        "experience", "work experience", "professional experience",
+        "employment history", "career history", "leadership & experience",
+        "leadership and experience"
+    ],
+    "projects": [
+        "projects", "academic projects", "personal projects",
+        "project experience"
+    ],
+    "certificates": [
+        "certificates", "certifications", "licenses", "courses",
+        "achievements", "awards"
+    ],
+    "languages": [
+        "languages", "language skills"
+    ],
+    "skills": [
+        "skills", "technical skills", "key skills", "core skills"
+    ]
+}
 
 
 def extract_text_from_pdf(file_path):
@@ -36,6 +57,68 @@ def clean_lines(text):
     return [line.strip() for line in text.split("\n") if line.strip()]
 
 
+def normalize_heading(line):
+    return (
+        line.lower()
+        .replace(":", "")
+        .replace("&", "and")
+        .strip()
+    )
+
+
+def get_heading_map():
+    heading_map = {}
+
+    for section, headings in SECTION_HEADINGS.items():
+        for heading in headings:
+            heading_map[heading.lower().replace("&", "and")] = section
+
+    return heading_map
+
+
+def detect_section(line):
+    normalized_line = normalize_heading(line)
+    heading_map = get_heading_map()
+
+    if normalized_line in heading_map:
+        return heading_map[normalized_line]
+
+    return None
+
+
+def extract_sections(text):
+    """
+    Extracts resume content based on section headings.
+    """
+    lines = clean_lines(text)
+
+    sections = {
+        "education": [],
+        "experience": [],
+        "projects": [],
+        "certificates": [],
+        "languages": [],
+        "skills": []
+    }
+
+    current_section = None
+
+    for line in lines:
+        detected_section = detect_section(line)
+
+        if detected_section:
+            current_section = detected_section
+            continue
+
+        if current_section:
+            sections[current_section].append(line)
+
+    return {
+        section: "\n".join(content).strip()
+        for section, content in sections.items()
+    }
+
+
 def extract_email(text):
     pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
     match = re.search(pattern, text)
@@ -48,91 +131,69 @@ def extract_phone(text):
     return match.group(0) if match else ""
 
 
-def extract_skills(text):
-    text_lower = text.lower()
+def extract_skills(text, skill_section=""):
+    combined_text = f"{text} {skill_section}".lower()
     found = []
 
     for skill in SKILL_KEYWORDS:
-        if skill in text_lower:
+        if skill in combined_text:
             found.append(skill)
 
     return ", ".join(sorted(set(found)))
 
 
-def extract_education(text):
+def fallback_education(text):
     lines = clean_lines(text)
-    education_lines = []
-
     keywords = [
         "bsc", "bachelor", "degree", "diploma", "higher diploma",
         "university", "institute", "college", "gce", "a/l", "o/l",
         "information technology", "computer science"
     ]
 
-    for line in lines:
-        line_lower = line.lower()
+    found = [
+        line for line in lines
+        if any(keyword in line.lower() for keyword in keywords)
+    ]
 
-        if any(keyword in line_lower for keyword in keywords):
-            education_lines.append(line)
-
-    return "\n".join(education_lines[:8])
+    return "\n".join(found[:8])
 
 
-def extract_experience(text):
+def fallback_experience(text):
     lines = clean_lines(text)
-    experience_lines = []
-
     keywords = [
-        "experience", "intern", "internship", "trainee", "developer",
+        "intern", "internship", "trainee", "developer",
         "engineer", "worked", "company", "years", "months"
     ]
 
-    for line in lines:
-        line_lower = line.lower()
-
-        if any(keyword in line_lower for keyword in keywords):
-            experience_lines.append(line)
-
-    return "\n".join(experience_lines[:8])
-
-
-def extract_projects(text):
-    lines = clean_lines(text)
-    project_lines = []
-
-    keywords = [
-        "project", "system", "application", "website", "web app",
-        "management system", "portfolio", "developed", "built"
+    found = [
+        line for line in lines
+        if any(keyword in line.lower() for keyword in keywords)
     ]
 
-    for line in lines:
-        line_lower = line.lower()
-
-        if any(keyword in line_lower for keyword in keywords):
-            project_lines.append(line)
-
-    return "\n".join(project_lines[:10])
+    return "\n".join(found[:8])
 
 
-def extract_certificates(text):
+def fallback_projects(text):
     lines = clean_lines(text)
-    certificate_lines = []
+    keywords = [
+        "project", "system", "application", "website", "web app",
+        "management system", "developed", "built"
+    ]
 
-    for line in lines:
-        line_lower = line.lower()
+    found = [
+        line for line in lines
+        if any(keyword in line.lower() for keyword in keywords)
+    ]
 
-        if any(keyword in line_lower for keyword in CERTIFICATE_KEYWORDS):
-            certificate_lines.append(line)
-
-    return "\n".join(certificate_lines[:8])
+    return "\n".join(found[:10])
 
 
-def extract_languages(text):
-    text_lower = text.lower()
+def extract_languages(text, language_section=""):
+    combined_text = f"{text} {language_section}".lower()
     found = []
 
     for language in LANGUAGE_KEYWORDS:
-        if language in text_lower:
+        if language in combined_text:
             found.append(language.capitalize())
 
     return ", ".join(sorted(set(found)))
@@ -140,15 +201,23 @@ def extract_languages(text):
 
 def parse_resume(file_path):
     text = extract_text_from_pdf(file_path)
+    sections = extract_sections(text)
+
+    education = sections["education"] or fallback_education(text)
+    experience = sections["experience"] or fallback_experience(text)
+    projects = sections["projects"] or fallback_projects(text)
+    certificates = sections["certificates"]
+    languages = extract_languages(text, sections["languages"])
+    skills = extract_skills(text, sections["skills"])
 
     return {
         "extracted_text": text,
         "extracted_email": extract_email(text),
         "extracted_phone": extract_phone(text),
-        "extracted_skills": extract_skills(text),
-        "education": extract_education(text),
-        "experience": extract_experience(text),
-        "projects": extract_projects(text),
-        "certificates": extract_certificates(text),
-        "languages": extract_languages(text)
+        "extracted_skills": skills,
+        "education": education,
+        "experience": experience,
+        "projects": projects,
+        "certificates": certificates,
+        "languages": languages
     }

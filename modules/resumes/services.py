@@ -239,7 +239,6 @@ def save_match_result(resume_id, job_id, match_data):
     cursor.close()
     connection.close()
 
-
 def get_match_result_by_resume_and_job(resume_id, job_id):
     """
     Gets AI match result with resume, job, and parsed resume details.
@@ -247,42 +246,43 @@ def get_match_result_by_resume_and_job(resume_id, job_id):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT
-            mr.*,
+    query = """
+    SELECT
+        mr.*,
 
-            r.candidate_name,
-            r.email,
-            r.phone,
-            r.original_filename,
+        r.candidate_name,
+        r.email,
+        r.phone,
+        r.original_filename,
 
-            j.job_title,
-            j.department,
-            j.location,
+        j.job_title,
+        j.department,
+        j.location,
 
-            rd.education,
-            rd.experience,
-            rd.projects,
-            rd.certificates,
-            rd.languages
+        rd.education,
+        rd.experience,
+        rd.projects,
+        rd.certificates,
+        rd.languages
 
-        FROM match_results mr
+    FROM match_results mr
 
-        JOIN resumes r
-        ON mr.resume_id = r.id
+    JOIN resumes r
+    ON mr.resume_id = r.id
 
-        JOIN jobs j
-        ON mr.job_id = j.id
+    JOIN jobs j
+    ON mr.job_id = j.id
 
-        LEFT JOIN resume_details rd
-        ON rd.resume_id = r.id
+    LEFT JOIN resume_details rd
+    ON rd.resume_id = r.id
 
-        WHERE mr.resume_id = %s
-        AND mr.job_id = %s
+    WHERE mr.resume_id = %s
+    AND mr.job_id = %s
 
-        ORDER BY mr.matched_at DESC
-        LIMIT 1
-    """, (resume_id, job_id))
+    ORDER BY mr.matched_at DESC
+    LIMIT 1
+    """
+    cursor.execute(query, (resume_id, job_id))
 
     result = cursor.fetchone()
 
