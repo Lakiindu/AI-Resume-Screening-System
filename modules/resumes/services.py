@@ -166,3 +166,67 @@ def save_resume_details(resume_id, parsed_data):
 
     cursor.close()
     connection.close()
+
+def get_resume_details_by_resume_id(resume_id):
+    """
+    Gets parsed details of a resume.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT *
+        FROM resume_details
+        WHERE resume_id = %s
+        ORDER BY parsed_at DESC
+        LIMIT 1
+    """, (resume_id,))
+
+    details = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    return details
+
+
+def save_match_result(resume_id, job_id, match_data):
+    """
+    Saves AI match result into match_results table.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM match_results
+        WHERE resume_id = %s AND job_id = %s
+    """, (resume_id, job_id))
+
+    cursor.execute("""
+        INSERT INTO match_results
+        (
+            resume_id,
+            job_id,
+            similarity_score,
+            skill_score,
+            final_score,
+            matched_skills,
+            missing_skills,
+            recommendation
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        resume_id,
+        job_id,
+        match_data["similarity_score"],
+        match_data["skill_score"],
+        match_data["final_score"],
+        match_data["matched_skills"],
+        match_data["missing_skills"],
+        match_data["recommendation"]
+    ))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()  

@@ -99,6 +99,7 @@
                                 <td>
                                     <div class="d-flex gap-1 flex-wrap">
 
+                                        <!-- Preview -->
                                         <a
                                             href="{{ url_for('resumes.preview', resume_id=resume.id) }}"
                                             target="_blank"
@@ -107,6 +108,7 @@
                                             <i class="bi bi-eye"></i>
                                         </a>
 
+                                        <!-- Download -->
                                         <a
                                             href="{{ url_for('resumes.download', resume_id=resume.id) }}"
                                             class="btn btn-outline-success btn-sm"
@@ -115,21 +117,29 @@
                                         </a>
 
                                         <!-- AI Parse Resume -->
-                                        <!-- AI Parse Resume -->
-                            <form
-                                method="POST"
-                                action="{{ url_for('resumes.parse', resume_id=resume.id) }}"
-                                class="d-inline">
-                                
-                                <button
-                                    type="submit"
-                                    class="btn btn-outline-info btn-sm"
-                                    title="Parse Resume">
-                                    <i class="bi bi-cpu"></i>
-                                </button>
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for('resumes.parse', resume_id=resume.id) }}"
+                                            class="d-inline">
 
-                            </form>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-outline-info btn-sm"
+                                                title="Parse Resume">
+                                                <i class="bi bi-cpu"></i>
+                                            </button>
 
+                                        </form>
+
+                                        <!-- AI Match Resume -->
+                                        <a
+                                            href="{{ url_for('resumes.match', resume_id=resume.id) }}"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            title="Run AI Match">
+                                            <i class="bi bi-bar-chart"></i>
+                                        </a>
+
+                                        <!-- Delete -->
                                         <button
                                             type="button"
                                             class="btn btn-outline-danger btn-sm"
@@ -143,6 +153,7 @@
                                 </td>
                             </tr>
 
+                            <!-- Delete Modal -->
                             <div class="modal fade" id="deleteResumeModal{{ resume.id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content border-0 rounded-4">
@@ -173,6 +184,7 @@
                                         </div>
 
                                         <div class="modal-footer border-0">
+
                                             <button
                                                 type="button"
                                                 class="btn btn-light"
@@ -183,10 +195,13 @@
                                             <form
                                                 method="POST"
                                                 action="{{ url_for('resumes.delete', resume_id=resume.id) }}">
+
                                                 <button type="submit" class="btn btn-danger">
                                                     Yes, Delete
                                                 </button>
+
                                             </form>
+
                                         </div>
 
                                     </div>
@@ -208,6 +223,7 @@
         {% else %}
 
             <div class="text-center py-5">
+
                 <i class="bi bi-file-earmark-person display-3 text-secondary"></i>
 
                 <h4 class="mt-3">
@@ -217,6 +233,7 @@
                 <p class="text-muted">
                     Upload candidate resumes to start AI screening.
                 </p>
+
             </div>
 
         {% endif %}

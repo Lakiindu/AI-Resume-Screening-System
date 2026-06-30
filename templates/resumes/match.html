@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "AI Match | AI Resume Screening System" %}
+{% set page_title = "Run AI Matching" %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-2">Run AI Matching</h5>
+        <p class="text-muted mb-4">
+            Select a job to compare with this candidate resume.
+        </p>
+
+        <div class="alert alert-info">
+            Candidate:
+            <strong>{{ resume.candidate_name }}</strong>
+            <br>
+            Resume:
+            <strong>{{ resume.original_filename }}</strong>
+        </div>
+
+        <form method="POST">
+            <div class="mb-4">
+                <label for="job_id" class="form-label">Select Job</label>
+
+                <select id="job_id" name="job_id" class="form-select" required>
+                    <option value="">-- Select Job --</option>
+
+                    {% for job in jobs %}
+                        <option value="{{ job.id }}">
+                            {{ job.job_title }} - {{ job.department }} - {{ job.location }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    Run AI Match
+                </button>
+
+                <a href="{{ url_for('resumes.index') }}" class="btn btn-light px-4">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

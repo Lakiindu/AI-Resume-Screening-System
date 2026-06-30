@@ -79,3 +79,30 @@ CREATE TABLE IF NOT EXISTS resume_details (
         ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===========================================
+-- Match Results Table
+-- ===========================================
+
+CREATE TABLE IF NOT EXISTS match_results (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    resume_id INT NOT NULL,
+    job_id INT NOT NULL,
+    similarity_score DECIMAL(5,2),
+    skill_score DECIMAL(5,2),
+    final_score DECIMAL(5,2),
+    matched_skills TEXT,
+    missing_skills TEXT,
+    recommendation VARCHAR(50),
+    matched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (resume_id)
+        REFERENCES resumes(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (job_id)
+        REFERENCES jobs(id)
+        ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

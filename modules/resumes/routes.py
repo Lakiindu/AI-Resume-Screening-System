@@ -12,7 +12,9 @@ from modules.resumes.services import (
     delete_resume_record,
     search_resumes,
     is_duplicate_resume,
-    save_resume_details
+    save_resume_details,
+    get_resume_details_by_resume_id,
+    save_match_result
 )
 
 from modules.resumes.utils import (
@@ -20,6 +22,10 @@ from modules.resumes.utils import (
     generate_unique_filename,
     ensure_upload_folder_exists
 )
+
+from modules.jobs.services import get_all_jobs, get_job_by_id
+from modules.ai.matcher import generate_match_result
+
 
 resumes_bp = Blueprint("resumes", __name__, url_prefix="/resumes")
 
@@ -106,6 +112,49 @@ def parse(resume_id):
 
     flash("Resume parsed successfully.", "success")
     return redirect(url_for("resumes.index"))
+
+
+@resumes_bp.route("/<int:resume_id>/match", methods=["GET", "POST"])
+@login_required
+def match(resume_id):
+    """
+    Allows admin to select a job and run AI matching.
+    """
+    resume = get_resume_by_id(resume_id)
+
+    if not resume:
+        flash("Resume not found.", "danger")
+        return redirect(url_for("resumes.index"))
+
+    resume_details = get_resume_details_by_resume_id(resume_id)
+
+    if not resume_details:
+        flash("Please parse the resume before running AI match.", "warning")
+        return redirect(url_for("resumes.index"))
+
+    jobs = get_all_jobs()
+
+    if request.method == "POST":
+        job_id = request.form.get("job_id")
+
+        job = get_job_by_id(job_id)
+
+        if not job:
+            flash("Selected job not found.", "danger")
+            return redirect(url_for("resumes.match", resume_id=resume_id))
+
+        match_data = generate_match_result(job, resume_details)
+
+        save_match_result(resume_id, job_id, match_data)
+
+        flash("AI matching completed successfully.", "success")
+        return redirect(url_for("resumes.index"))
+
+    return render_template(
+        "resumes/match.html",
+        resume=resume,
+        jobs=jobs
+    )
 
 
 @resumes_bp.route("/<int:resume_id>/preview")
