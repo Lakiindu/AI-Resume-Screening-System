@@ -1,0 +1,41 @@
+from database.db_connection import get_db_connection
+
+
+def get_all_candidates():
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+
+        SELECT
+
+            resumes.id,
+            resumes.candidate_name,
+            resumes.email,
+            resumes.phone,
+            resumes.status,
+
+            jobs.job_title,
+
+            match_results.final_score,
+            match_results.recommendation
+
+        FROM resumes
+
+        LEFT JOIN match_results
+            ON resumes.id = match_results.resume_id
+
+        LEFT JOIN jobs
+            ON jobs.id = match_results.job_id
+
+        ORDER BY resumes.uploaded_at DESC
+
+    """)
+
+    candidates = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return candidates

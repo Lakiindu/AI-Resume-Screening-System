@@ -34,32 +34,43 @@
 
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu">
+
             <li>
-                <a href="{{ url_for('dashboard.index') }}">
+                <a href="{{ url_for('dashboard.index') }}"
+                   class="{% if request.endpoint.startswith('dashboard') %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
                     Dashboard
                 </a>
             </li>
 
             <li>
-                <a href="{{ url_for('jobs.index') }}">
+                <a href="{{ url_for('jobs.index') }}"
+                   class="{% if request.endpoint.startswith('jobs') %}active{% endif %}">
+                    <i class="bi bi-briefcase"></i>
                     Jobs
                 </a>
             </li>
 
             <li>
-                <a href="{{ url_for('resumes.index') }}">
+                <a href="{{ url_for('resumes.index') }}"
+                   class="{% if request.endpoint.startswith('resumes') %}active{% endif %}">
+                    <i class="bi bi-file-earmark-person"></i>
                     Resumes
                 </a>
             </li>
 
+            <!-- NEW Candidates Menu -->
             <li>
-                <a href="#">
+                <a href="{{ url_for('candidates.index') }}"
+                   class="{% if request.endpoint.startswith('candidates') %}active{% endif %}">
+                    <i class="bi bi-people"></i>
                     Candidates
                 </a>
             </li>
 
             <li>
-                <a href="{{ url_for('ranking.index') }}">
+                <a href="{{ url_for('ranking.index') }}"
+                   class="{% if request.endpoint.startswith('ranking') %}active{% endif %}">
                     <i class="bi bi-trophy"></i>
                     Ranking
                 </a>
@@ -67,33 +78,41 @@
 
             <li>
                 <a href="#">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
                     Reports
                 </a>
             </li>
 
             <li>
                 <a href="#">
+                    <i class="bi bi-graph-up-arrow"></i>
                     Analytics
                 </a>
             </li>
 
             <li>
-                <a href="{{ url_for('auth.profile') }}">
+                <a href="{{ url_for('auth.profile') }}"
+                   class="{% if request.endpoint == 'auth.profile' %}active{% endif %}">
+                    <i class="bi bi-person-circle"></i>
                     Profile
                 </a>
             </li>
 
             <li>
-                <a href="{{ url_for('auth.change_password') }}">
+                <a href="{{ url_for('auth.change_password') }}"
+                   class="{% if request.endpoint == 'auth.change_password' %}active{% endif %}">
+                    <i class="bi bi-key"></i>
                     Change Password
                 </a>
             </li>
 
             <li>
                 <a href="{{ url_for('auth.logout') }}">
+                    <i class="bi bi-box-arrow-right"></i>
                     Logout
                 </a>
             </li>
+
         </ul>
 
     </aside>
