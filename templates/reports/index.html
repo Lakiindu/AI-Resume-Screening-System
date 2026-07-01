@@ -1,0 +1,192 @@
+{% extends "layouts/base.html" %}
+
+{% set title = "Reports | AI Resume Screening System" %}
+{% set page_title = "Reports" %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h3 class="fw-bold">Reports</h3>
+    <p class="text-muted mb-0">View candidate, job, and AI match reports.</p>
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Candidates</p>
+                <h3>{{ candidate_report|length }}</h3>
+            </div>
+            <div class="stat-icon bg-blue">👥</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Jobs</p>
+                <h3>{{ job_report|length }}</h3>
+            </div>
+            <div class="stat-icon bg-green">💼</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>AI Matches</p>
+                <h3>{{ match_report|length }}</h3>
+            </div>
+            <div class="stat-icon bg-purple">🤖</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Status Types</p>
+                <h3>{{ status_report|length }}</h3>
+            </div>
+            <div class="stat-icon bg-orange">📊</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">AI Match Report</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Job</th>
+                        <th>Score</th>
+                        <th>Recommendation</th>
+                        <th>Matched Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in match_report %}
+                        <tr>
+                            <td>{{ item.candidate_name }}</td>
+                            <td>{{ item.job_title }}</td>
+                            <td>{{ item.final_score }}%</td>
+                            <td>{{ item.recommendation }}</td>
+                            <td>
+                                {% if item.matched_at %}
+                                    {{ item.matched_at.strftime("%d %b %Y") }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No match reports available.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">Candidate Report</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for candidate in candidate_report %}
+                        <tr>
+                            <td>{{ candidate.candidate_name }}</td>
+                            <td>{{ candidate.email }}</td>
+                            <td>{{ candidate.phone }}</td>
+                            <td>{{ candidate.status }}</td>
+                            <td>
+                                {% if candidate.uploaded_at %}
+                                    {{ candidate.uploaded_at.strftime("%d %b %Y") }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No candidates available.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">Job Report</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Department</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for job in job_report %}
+                        <tr>
+                            <td>{{ job.job_title }}</td>
+                            <td>{{ job.department }}</td>
+                            <td>{{ job.location }}</td>
+                            <td>{{ job.status }}</td>
+                            <td>
+                                {% if job.created_at %}
+                                    {{ job.created_at.strftime("%d %b %Y") }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No jobs available.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
