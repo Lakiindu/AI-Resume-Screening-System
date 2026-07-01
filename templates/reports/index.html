@@ -54,12 +54,15 @@
 
 </div>
 
+<!-- AI Match Report -->
 <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
+
         <h5 class="fw-bold mb-3">AI Match Report</h5>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
+
                 <thead class="table-light">
                     <tr>
                         <th>Candidate</th>
@@ -71,40 +74,63 @@
                 </thead>
 
                 <tbody>
+
                     {% for item in match_report %}
-                        <tr>
-                            <td>{{ item.candidate_name }}</td>
-                            <td>{{ item.job_title }}</td>
-                            <td>{{ item.final_score }}%</td>
-                            <td>{{ item.recommendation }}</td>
-                            <td>
-                                {% if item.matched_at %}
-                                    {{ item.matched_at.strftime("%d %b %Y") }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{ item.candidate_name }}</td>
+                        <td>{{ item.job_title }}</td>
+                        <td>{{ item.final_score }}%</td>
+                        <td>{{ item.recommendation }}</td>
+
+                        <td>
+                            {% if item.matched_at %}
+                                {{ item.matched_at.strftime("%d %b %Y") }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                    </tr>
                     {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No match reports available.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No match reports available.
+                        </td>
+                    </tr>
                     {% endfor %}
+
                 </tbody>
 
             </table>
         </div>
+
     </div>
 </div>
 
+<!-- Candidate Report -->
 <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
-        <h5 class="fw-bold mb-3">Candidate Report</h5>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h5 class="fw-bold mb-0">
+                Candidate Report
+            </h5>
+
+            <a
+                href="{{ url_for('reports.export_candidate_pdf') }}"
+                class="btn btn-danger">
+
+                <i class="bi bi-file-earmark-pdf"></i>
+                Export PDF
+
+            </a>
+
+        </div>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
+
                 <thead class="table-light">
                     <tr>
                         <th>Candidate</th>
@@ -116,40 +142,56 @@
                 </thead>
 
                 <tbody>
+
                     {% for candidate in candidate_report %}
-                        <tr>
-                            <td>{{ candidate.candidate_name }}</td>
-                            <td>{{ candidate.email }}</td>
-                            <td>{{ candidate.phone }}</td>
-                            <td>{{ candidate.status }}</td>
-                            <td>
-                                {% if candidate.uploaded_at %}
-                                    {{ candidate.uploaded_at.strftime("%d %b %Y") }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <tr>
+
+                        <td>{{ candidate.candidate_name }}</td>
+
+                        <td>{{ candidate.email }}</td>
+
+                        <td>{{ candidate.phone }}</td>
+
+                        <td>{{ candidate.status }}</td>
+
+                        <td>
+                            {% if candidate.uploaded_at %}
+                                {{ candidate.uploaded_at.strftime("%d %b %Y") }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                    </tr>
                     {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No candidates available.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No candidates available.
+                        </td>
+                    </tr>
                     {% endfor %}
+
                 </tbody>
 
             </table>
         </div>
+
     </div>
 </div>
 
+<!-- Job Report -->
 <div class="card border-0 shadow-sm rounded-4">
+
     <div class="card-body">
-        <h5 class="fw-bold mb-3">Job Report</h5>
+
+        <h5 class="fw-bold mb-3">
+            Job Report
+        </h5>
 
         <div class="table-responsive">
+
             <table class="table table-hover align-middle">
+
                 <thead class="table-light">
                     <tr>
                         <th>Job Title</th>
@@ -161,32 +203,43 @@
                 </thead>
 
                 <tbody>
+
                     {% for job in job_report %}
-                        <tr>
-                            <td>{{ job.job_title }}</td>
-                            <td>{{ job.department }}</td>
-                            <td>{{ job.location }}</td>
-                            <td>{{ job.status }}</td>
-                            <td>
-                                {% if job.created_at %}
-                                    {{ job.created_at.strftime("%d %b %Y") }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <tr>
+
+                        <td>{{ job.job_title }}</td>
+
+                        <td>{{ job.department }}</td>
+
+                        <td>{{ job.location }}</td>
+
+                        <td>{{ job.status }}</td>
+
+                        <td>
+                            {% if job.created_at %}
+                                {{ job.created_at.strftime("%d %b %Y") }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                    </tr>
                     {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No jobs available.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No jobs available.
+                        </td>
+                    </tr>
                     {% endfor %}
+
                 </tbody>
 
             </table>
+
         </div>
+
     </div>
+
 </div>
 
 {% endblock %}
